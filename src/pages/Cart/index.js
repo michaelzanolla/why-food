@@ -41,7 +41,6 @@ function Cart({ cart, total, dispatch }) {
               </td>
               <td>
                 <strong>{product.name}</strong>
-                <span>{product.priceFormatted}</span>
               </td>
               <td>
                 <div>
@@ -85,11 +84,13 @@ function Cart({ cart, total, dispatch }) {
 const mapStateToProps = state => ({
   cart: state.cart.map(product => ({
     ...product,
-    subTotal: formatPrice(product.price + product.valorFinal * product.amount),
+    subTotal: formatPrice(
+      (product.valorFinal + product.price) * product.amount
+    ),
   })),
   total: formatPrice(
     state.cart.reduce((total, product) => {
-      return total + product.price + product.valorFinal * product.amount;
+      return total + (product.price + product.valorFinal) * product.amount;
     }, 0)
   ),
 });

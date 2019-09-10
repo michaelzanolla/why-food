@@ -9,8 +9,6 @@ function* addToCart({ product }) {
     state.cart.find(p => p.id === product.id)
   );
 
-  console.log(product);
-
   if (productExists) {
     const amount = productExists.amount + 1;
     yield put(updateAmount(product.id, amount));

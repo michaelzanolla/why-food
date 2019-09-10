@@ -32,7 +32,7 @@ function Products({ amount }) {
   const [productView, setProductView] = useState({});
   const [valueMultiple, setValueMultiple] = useState(0);
   const [valueSpanMultiple, setValueSpanMultiple] = useState([]);
-  const [valueList, setValueList] = useState(0);
+  const [valueList, setValueList] = useState([]);
   const [valueSpanList, setValueSpanList] = useState([]);
   const [productValues, setProductValues] = useState([]);
   const [valorTotal, setValorTotal] = useState(0);
@@ -61,7 +61,6 @@ function Products({ amount }) {
       ...productView,
       amount: 1,
       productValues,
-      priceFormatted: valorTotal,
       valorFinal: productValues.reduce((valorFinal, item) => {
         valorFinal +=
           item.type === 'list' ? item.price * item.count : item.price;
@@ -99,7 +98,7 @@ function Products({ amount }) {
 
     setValueMultiple(0);
     setValueSpanMultiple([]);
-    setValueList(0);
+    setValueList([]);
     setValueSpanList([]);
     setProductValues([]);
     setIsDisabled(true);
@@ -139,11 +138,20 @@ function Products({ amount }) {
       }
     });
 
+    let countRequiredList = 0;
+    productValues.map(option => {
+      if (option.type === 'list' && countRequiredList === 0) {
+        countRequiredList += 1;
+      }
+    });
+
     productValues.map(option => {
       if (option.required) {
         countRequired += 1;
       }
     });
+
+    countRequired += countRequiredList;
 
     setOptionsRequiredSelect(countRequired);
 
@@ -219,17 +227,26 @@ function Products({ amount }) {
     }
 
     if (type === 'list') {
-      if (valueList < max) {
-        if (valueSpanList[idRespOpcao]) {
-          valueSpanList[idRespOpcao] += 1;
+      if (valueList[idOpcao] < max || !valueList[idOpcao]) {
+        const stringNumber = productView.id + idOpcao + idRespOpcao;
+        if (valueSpanList[Number(stringNumber)]) {
+          valueSpanList[Number(stringNumber)] += 1;
 
-          setValueList(valueList + 1);
           setValueSpanList(valueSpanList);
         } else {
-          valueSpanList[idRespOpcao] = 1;
+          valueSpanList[Number(stringNumber)] = 1;
 
-          setValueList(valueList + 1);
           setValueSpanList(valueSpanList);
+        }
+
+        if (valueList[idOpcao]) {
+          valueList[idOpcao] += 1;
+
+          setValueList(valueList);
+        } else {
+          valueList[idOpcao] = 1;
+
+          setValueList(valueList);
         }
 
         const indexProduct = productValues.findIndex(
@@ -333,11 +350,14 @@ function Products({ amount }) {
     }
 
     if (type === 'list') {
-      if (valueSpanList[idRespOpcao] > 0) {
-        valueSpanList[idRespOpcao] -= 1;
+      const stringNumber = productView.id + idOpcao + idRespOpcao;
+      if (valueSpanList[Number(stringNumber)] > 0) {
+        valueSpanList[Number(stringNumber)] -= 1;
 
         setValueSpanList(valueSpanList);
-        setValueList(valueList - 1);
+
+        valueList[idOpcao] -= 1;
+        setValueList(valueList);
 
         const indexProduct = productValues.findIndex(
           p => p.id === idOpcao && p.idresp === idRespOpcao
@@ -574,7 +594,11 @@ function Products({ amount }) {
                                 Style="font-size:12px; font-weight:normal; margin-right: 5px;"
                                 variant="secondary"
                               >
-                                {`${valueList}/${option.max}`}
+                                {`${
+                                  valueList[option.id]
+                                    ? valueList[option.id]
+                                    : '0'
+                                }/${option.max}`}
                               </Badge>
                               <Badge
                                 Style="font-size:12px; font-weight:normal"
@@ -588,7 +612,11 @@ function Products({ amount }) {
                               Style="font-size:12px; font-weight:normal; margin-right: 5px;"
                               variant="secondary"
                             >
-                              {`${valueList}/${option.max}`}
+                              {`${
+                                valueList[option.id]
+                                  ? valueList[option.id]
+                                  : '0'
+                              }/${option.max}`}
                             </Badge>
                           )}
                         </div>
@@ -608,7 +636,13 @@ function Products({ amount }) {
                                 ) : null}
                               </div>
                               <div Style="display: flex; align-items: center;">
-                                {valueSpanList[value.id] > 0 ? (
+                                {valueSpanList[
+                                  Number(
+                                    String(
+                                      productView.id + option.id + value.id
+                                    )
+                                  )
+                                ] > 0 && valueList[option.id] ? (
                                   <>
                                     <MdRemoveCircleOutline
                                       size={22}
@@ -624,7 +658,17 @@ function Products({ amount }) {
                                       }}
                                     />
                                     <span Style="margin: 5px;">
-                                      {valueSpanList[value.id]}
+                                      {
+                                        valueSpanList[
+                                          Number(
+                                            String(
+                                              productView.id +
+                                                option.id +
+                                                value.id
+                                            )
+                                          )
+                                        ]
+                                      }
                                     </span>
                                   </>
                                 ) : null}
