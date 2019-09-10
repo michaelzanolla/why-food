@@ -8,7 +8,7 @@ Para que o usuário possa adicionar um produto ao carrinho é necessário que se
 
 ## Instalação
 
-Após copiar o projeto executar o comando `yarn` na raiz do projeto para a instalção de todas as depedencias.
+Após copiar o projeto executar o comando `yarn` na raiz do projeto para a instalação de todas as depedências.
 
 Após finalizar a instalação executar o comando `yarn start` para iniciar o projeto.
 
