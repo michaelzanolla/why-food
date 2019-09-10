@@ -6,6 +6,8 @@ import {
   MdDelete,
 } from 'react-icons/md';
 
+import swal from 'sweetalert';
+
 import { formatPrice } from '../../util/format';
 
 import { updateAmount, removeFromCart } from '../../store/modules/cart/actions';
@@ -19,6 +21,14 @@ function Cart({ cart, total, dispatch }) {
 
   function decrement(product) {
     dispatch(updateAmount(product.id, product.amount - 1));
+  }
+
+  function handleSubmit() {
+    swal({
+      title: 'Sorry!',
+      text: "Não deu tempo de terminar essa etapa :'(!",
+      icon: 'success',
+    });
   }
 
   return (
@@ -70,7 +80,14 @@ function Cart({ cart, total, dispatch }) {
       </ProductTable>
 
       <footer>
-        <button type="button">Finalizar Pedido</button>
+        <button
+          type="button"
+          onClick={() => {
+            handleSubmit();
+          }}
+        >
+          Finalizar Pedido
+        </button>
 
         <Total>
           <span>TOTAL</span>
